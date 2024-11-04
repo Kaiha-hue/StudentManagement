@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudentManagementApplication {
 
 	private String name = "Kai Hatashima";
-	private String name1 = "Hatashima Kai";
+	private String name1 = "Kai";
 	private String age = "24";
 	private String age1 ="15";
 	
