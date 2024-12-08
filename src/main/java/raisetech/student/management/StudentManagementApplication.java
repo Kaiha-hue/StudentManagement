@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import raisetech.student.management.data.Student;
 import raisetech.student.management.data.StudentsCourses;
 import raisetech.student.management.repository.StudentRepository;
-
+^
 @SpringBootApplication
 
 public class StudentManagementApplication {
