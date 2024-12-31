@@ -10,11 +10,15 @@ import raisetech.StudentManagement.repository.StudentRepository;
 @Service
 public class StudentService {
 
-  private StudentRepository repository;
+  private final StudentRepository repository;
 
   @Autowired
   public StudentService(StudentRepository repository) {
     this.repository = repository;
+  }
+
+  public void saveStudent(Student student) {
+    repository.insertStudent(student); // 保存処理
   }
 
   public List<Student> searchStudentList() {
