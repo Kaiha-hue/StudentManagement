@@ -1,5 +1,6 @@
 package raisetech.StudentManagement.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,25 +48,11 @@ public class StudentController {
   }
 
   @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
+  public String registerStudent(@ModelAttribute @Valid StudentDetail studentDetail, BindingResult result) {
     if(result.hasErrors()) {
       return "registerStudent";
     }
-
-    Student student = studentDetail.getStudent();
-
-    System.out.println("新規受講生情報:");
-    System.out.println("ID: " + student.getId());
-    System.out.println("名前: " + student.getName());
-    System.out.println("ニックネーム: " + student.getNickname());
-    System.out.println("メール: " + student.getEmail());
-    System.out.println("住所: " + student.getAddress());
-    System.out.println("年齢: " + student.getAge());
-    System.out.println("性別: " + student.getGender());
-    System.out.println("備考: " + student.getRemark());
-
-    service.saveStudent(student);
-
+    service.registerStudent(studentDetail);
     return "redirect:/studentList";
   }
 }
