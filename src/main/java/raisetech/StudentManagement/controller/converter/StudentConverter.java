@@ -17,8 +17,9 @@ public class StudentConverter {
       StudentDetail studentDetail = new StudentDetail();
       studentDetail.setStudent(student);
 
+      // 修正: int 型の比較に `==` を使用
       List<StudentsCourses> convertStudentCourses = studentsCourses.stream()
-          .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
+          .filter(studentCourse -> student.getId() == studentCourse.getStudentId())
           .collect(Collectors.toList());
 
       studentDetail.setStudentsCourses(convertStudentCourses);
@@ -26,5 +27,4 @@ public class StudentConverter {
     });
     return studentDetails;
   }
-
 }
