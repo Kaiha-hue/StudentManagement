@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class Student {
 
-  private String id;
+  private int id;
 
   @NotBlank(message = "名前は必須です。")
   private String name;
@@ -23,4 +23,5 @@ public class Student {
   private String gender;
   private String remark;
   private boolean isDeleted;
+  private String courseName;
 }

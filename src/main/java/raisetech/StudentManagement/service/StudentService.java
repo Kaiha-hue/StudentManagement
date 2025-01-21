@@ -14,6 +14,10 @@ public class StudentService {
 
   private StudentRepository repository;
 
+  public void updateStudentCourseName(int studentId, String courseName) {
+    repository.updateStudentCourseName(studentId, courseName);
+  }
+
   @Autowired
   public StudentService(StudentRepository repository) {
     this.repository = repository;
@@ -24,11 +28,29 @@ public class StudentService {
   }
 
   public List<StudentsCourses> searchStudentsCourseList() {
-    return repository.searchStudentsCourses();
+    return repository.findAllStudentsCourses();
+  }
+
+  public List<StudentsCourses> searchStudentsCoursesByStudentId(String studentId) {
+    return repository.findStudentsCoursesByStudentId(studentId);
+  }
+
+  public Student searchStudentById(int id) {
+    return repository.findStudentById(id);
   }
 
   @Transactional
   public void registerStudent(StudentDetail studentDetail) {
     repository.registerStudent(studentDetail.getStudent());
+  }
+
+  @Transactional
+  public void updateStudent(Student student) {
+    repository.updateStudent(student);
+  }
+
+  @Transactional
+  public void updateStudentsCourses(StudentsCourses studentsCourses) {
+    repository.updateStudentsCourses(studentsCourses);
   }
 }

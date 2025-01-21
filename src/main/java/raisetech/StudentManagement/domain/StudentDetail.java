@@ -10,9 +10,8 @@ import raisetech.StudentManagement.data.StudentsCourses;
 @Getter
 @Setter
 public class StudentDetail {
-
   @Valid
   private Student student;
-
   private List<StudentsCourses> studentsCourses;
+  private List<String> availableCourses;
 }
