@@ -42,15 +42,30 @@ public class StudentController {
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
     studentDetail.setStudentsCourses(Arrays.asList(new StudentsCourses()));
+    // コース選択肢を追加
+    List<String> availableCourses = Arrays.asList("Java", "English", "Python", "Physics", "Chemistry");
+    model.addAttribute("availableCourses", availableCourses);
+
     model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
   @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    if(result.hasErrors()) {
+  public String registerStudent(@Valid @ModelAttribute StudentDetail studentDetail,
+      BindingResult result,
+      Model model) {
+    if (result.hasErrors()) {
+      // エラー時にコース選択肢を再設定
+      List<String> availableCourses = Arrays.asList("Java", "English", "Python", "Physics", "Chemistry");
+      model.addAttribute("availableCourses", availableCourses);
       return "registerStudent";
     }
+    // 受講コース名を学生の courseName にセット
+    if (!studentDetail.getStudentsCourses().isEmpty()) {
+      String firstCourseName = studentDetail.getStudentsCourses().get(0).getCourseName();
+      studentDetail.getStudent().setCourseName(firstCourseName);
+    }
+
     service.registerStudent(studentDetail);
     return "redirect:/studentList";
   }
@@ -59,7 +74,7 @@ public class StudentController {
   public String updateStudent(@Valid @ModelAttribute StudentDetail studentDetail, BindingResult result, Model model) {
     if (result.hasErrors()) {
       model.addAttribute("studentDetail", studentDetail);
-      return "updateStudent"; // エラーメッセージとともにフォームを再表示
+      return "updateStudent";
     }
     service.updateStudent(studentDetail.getStudent());
     return "redirect:/studentList";
@@ -67,7 +82,6 @@ public class StudentController {
 
   @GetMapping("/updateStudent/{id}")
   public String updateStudentForm(@PathVariable("id") int id, Model model) {
-    // IDに基づき学生情報を取得
     Student student = service.searchStudentById(id);
     List<StudentsCourses> studentsCourses = service.searchStudentsCoursesByStudentId(String.valueOf(id));
 
@@ -93,6 +107,9 @@ public class StudentController {
       Model model
   ) {
     if (result.hasErrors()) {
+      // エラー時にコース選択肢を再設定
+      List<String> availableCourses = Arrays.asList("Java", "English", "Python", "Physics", "Chemistry");
+      model.addAttribute("availableCourses", availableCourses);
       model.addAttribute("studentDetail", studentDetail);
       return "updateStudent";
     }
@@ -106,12 +123,25 @@ public class StudentController {
       service.updateStudentsCourses(course);
     }
 
-    // ★ students テーブルのコース名も更新
+    // students テーブルのコース名も更新
     if (!studentDetail.getStudentsCourses().isEmpty()) {
       String firstCourseName = studentDetail.getStudentsCourses().get(0).getCourseName();
       studentDetail.getStudent().setCourseName(firstCourseName);
       service.updateStudentCourseName(id, firstCourseName);
     }
     return "redirect:/studentList";
+  }
+
+  @GetMapping("/restoreStudentList")
+  public String getRestoreStudentList(Model model) {
+    List<Student> canceledStudents = service.searchCanceledStudentList();
+    model.addAttribute("canceledStudentList", canceledStudents);
+    return "restoreStudentList";
+  }
+
+  @PostMapping("/restoreStudent/{id}")
+  public String restoreStudent(@PathVariable("id") int id) {
+    service.restoreStudent(id);
+    return "redirect:/restoreStudentList";
   }
 }
