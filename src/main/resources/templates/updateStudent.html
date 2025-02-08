@@ -10,23 +10,29 @@
   <div>
     <label for="name">名前:</label>
     <input type="text" id="name" th:field="*{student.name}" />
+    <div th:if="${#fields.hasErrors('student.name')}" th:errors="*{student.name}" class="error-message"></div>
   </div>
+
   <div>
     <label for="nickname">ニックネーム:</label>
     <input type="text" id="nickname" th:field="*{student.nickname}" />
   </div>
+
   <div>
     <label for="email">メールアドレス:</label>
     <input type="email" id="email" th:field="*{student.email}" />
   </div>
+
   <div>
     <label for="address">お住まいの地域:</label>
     <input type="text" id="address" th:field="*{student.address}" />
   </div>
+
   <div>
     <label for="age">年齢:</label>
     <input type="number" id="age" th:field="*{student.age}" />
   </div>
+
   <div>
     <label for="gender">性別:</label>
     <select id="gender" th:field="*{student.gender}">
@@ -35,24 +41,33 @@
       <option value="その他" th:selected="*{student.gender == 'その他'}">その他</option>
     </select>
   </div>
+
   <div>
     <label for="remark">備考:</label>
     <textarea id="remark" th:field="*{student.remark}"></textarea>
   </div>
+
   <div>
     <label>受講コース名:</label>
     <div th:each="course, iterStat : ${studentDetail.studentsCourses}">
       <select th:field="*{studentsCourses[__${iterStat.index}__].courseName}">
-        <!-- availableCoursesからコースを表示 -->
+        <option value="">コースを選択してください</option>
         <option th:each="courseOption : ${availableCourses}"
                 th:value="${courseOption}"
                 th:text="${courseOption}"
-                th:selected="${courseOption == course.courseName}"></option>
+                th:selected="${courseOption == course.courseName}">
+        </option>
       </select>
       <input type="hidden" th:field="*{studentsCourses[__${iterStat.index}__].id}" />
       <input type="hidden" th:field="*{studentsCourses[__${iterStat.index}__].studentId}" />
     </div>
   </div>
+
+  <div>
+    <label for="isDeleted">キャンセル:</label>
+    <input type="checkbox" id="isDeleted" th:field="*{student.isDeleted}" />
+  </div>
+
   <div>
     <button type="submit">更新</button>
   </div>

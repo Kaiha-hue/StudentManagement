@@ -42,14 +42,16 @@
     <textarea id="remark" th:field="*{student.remark}"></textarea>
   </div>
   <div>
-    <label for="course">受講コース:</label>
-    <select id="course" th:field="*{student.courseName}">
-      <option value="" disabled selected>コースを選択してください</option>
-      <option th:each="course : ${studentDetail.studentsCourses}"
-              th:value="${course.courseName}"
-              th:text="${course.courseName}">
-      </option>
-    </select>
+    <label>受講コース名:</label>
+    <div th:each="course, iterStat : ${studentDetail.studentsCourses}">
+      <select th:field="*{studentsCourses[__${iterStat.index}__].courseName}">
+        <option value="">コースを選択してください</option>
+        <option th:each="courseOption : ${availableCourses}"
+                th:value="${courseOption}"
+                th:text="${courseOption}">
+        </option>
+      </select>
+    </div>
   </div>
   <div>
     <button type="submit">登録</button>

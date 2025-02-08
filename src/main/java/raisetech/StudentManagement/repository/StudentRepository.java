@@ -10,35 +10,27 @@ import org.apache.ibatis.annotations.Update;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentsCourses;
 
-/**
- * 受講生情報を扱うリポジトリ。
- *
- * 全件検索や単一条件での検索、コース情報の検索が行えるクラスです。
- */
 @Mapper
 public interface StudentRepository {
 
-  /**
-   * 全件検索します。
-   *
-   * @return 全件検索した乗降性情報の一覧
-   */
-  @Select("SELECT * FROM students")
+  @Select("SELECT * FROM students WHERE is_deleted = false")
   List<Student> search();
+
+  @Select("SELECT * FROM students WHERE id = #{id}")
+  Student findStudentById(int id);
 
   @Select("SELECT * FROM students_courses")
   List<StudentsCourses> findAllStudentsCourses(); // 全件検索
 
-  @Select("SELECT * FROM students_courses WHERE studentId = #{studentId}")
-  List<StudentsCourses> findStudentsCoursesByStudentId(String studentId); // studentIdに基づく検索
+  @Select("SELECT * FROM students_courses WHERE student_id = #{studentId}")
+  List<StudentsCourses> findStudentsCoursesByStudentId(String studentId);
 
-  @Insert("INSERT INTO students (name, nickname, email, address, age, gender, remark, is_deleted) " +
-      "VALUES (#{name}, #{nickname}, #{email}, #{address}, #{age}, #{gender}, #{remark}, false)")
+  @Insert("INSERT INTO students (name, nickname, email, address, age, gender, remark, is_deleted, course_name) " +
+      "VALUES (#{name}, #{nickname}, #{email}, #{address}, #{age}, #{gender}, #{remark}, false, #{courseName})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudent(Student student);
 
-
-  @Insert("INSERT INTO students_courses (studentId, course_name, courseStartAt, courseEndAt) " +
+  @Insert("INSERT INTO students_courses (student_id, course_name, course_start_at, course_end_at) " +
       "VALUES (#{studentId}, #{courseName}, #{courseStartAt}, #{courseEndAt})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudentsCourses(StudentsCourses studentsCourses);
@@ -48,12 +40,15 @@ public interface StudentRepository {
       "is_deleted = #{isDeleted} WHERE id = #{id}")
   void updateStudent(Student student);
 
-  @Update("UPDATE students_courses SET course_name = #{courseName}, courseStartAt = #{courseStartAt}, courseEndAt = #{courseEndAt} WHERE id = #{id}")
+  @Update("UPDATE students_courses SET course_name = #{courseName}, course_start_at = #{courseStartAt}, course_end_at = #{courseEndAt} WHERE id = #{id}")
   void updateStudentsCourses(StudentsCourses studentsCourses);
-
-  @Select("SELECT * FROM students WHERE id = #{id}")
-  Student findStudentById(int id);
 
   @Update("UPDATE students SET course_name = #{courseName} WHERE id = #{id}")
   void updateStudentCourseName(@Param("id") int id, @Param("courseName") String courseName);
+
+  @Select("SELECT * FROM students WHERE is_deleted = true")
+  List<Student> findCanceledStudents();
+
+  @Update("UPDATE students SET is_deleted = false WHERE id = #{id}")
+  void restoreStudent(int id);
 }
