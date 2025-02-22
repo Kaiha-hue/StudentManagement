@@ -1,7 +1,6 @@
 package raisetech.StudentManagement.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,17 @@ public class StudentService {
 
   @Transactional
   public void registerStudent(StudentDetail studentDetail) {
+    // コース名を取得
+    String courseName = studentDetail.getStudentsCourses().isEmpty() ? null
+        : studentDetail.getStudentsCourses().get(0).getCourseName();
+
+    // 学生情報にコース名をセット
+    studentDetail.getStudent().setCourseName(courseName);
+
+    // 学生情報を登録
     repository.registerStudent(studentDetail.getStudent());
+
+    // 受講コース情報を登録
     for (StudentsCourses studentsCourses : studentDetail.getStudentsCourses()) {
       studentsCourses.setStudentId(studentDetail.getStudent().getId());
       studentsCourses.setCourseStartAt(LocalDate.now());
@@ -53,7 +62,7 @@ public class StudentService {
   }
 
   @Transactional
-  public void updateStudent(Student student) {
+  public void updateStudent(StudentDetail student) {
     repository.updateStudent(student);
   }
 
@@ -69,5 +78,8 @@ public class StudentService {
   @Transactional
   public void restoreStudent(int id) {
     repository.restoreStudent(id);
+  }
+
+  public void updateStudent(Student student) {
   }
 }

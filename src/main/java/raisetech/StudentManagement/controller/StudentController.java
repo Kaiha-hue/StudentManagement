@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,13 +12,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentsCourses;
 import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.service.StudentService;
 
-@Controller
+@RestController
 public class StudentController {
 
   private StudentService service;
@@ -30,12 +33,10 @@ public class StudentController {
   }
 
   @GetMapping("/studentList")
-  public String getStudentList(Model model) {
+  public List<StudentDetail> getStudentList() {
     List<Student> students = service.searchStudentList();
     List<StudentsCourses> studentsCourses = service.searchStudentsCourseList();
-
-    model.addAttribute("studentList", converter.convertStudentDetails(students, studentsCourses));
-    return "studentList";
+    return converter.convertStudentDetails(students, studentsCourses);
   }
 
   @GetMapping("/newStudent")
@@ -51,33 +52,15 @@ public class StudentController {
   }
 
   @PostMapping("/registerStudent")
-  public String registerStudent(@Valid @ModelAttribute StudentDetail studentDetail,
-      BindingResult result,
-      Model model) {
-    if (result.hasErrors()) {
-      // エラー時にコース選択肢を再設定
-      List<String> availableCourses = Arrays.asList("Java", "English", "Python", "Physics", "Chemistry");
-      model.addAttribute("availableCourses", availableCourses);
-      return "registerStudent";
-    }
-    // 受講コース名を学生の courseName にセット
-    if (!studentDetail.getStudentsCourses().isEmpty()) {
-      String firstCourseName = studentDetail.getStudentsCourses().get(0).getCourseName();
-      studentDetail.getStudent().setCourseName(firstCourseName);
-    }
-
+  public ResponseEntity<String> registerStudent(@RequestBody @Valid StudentDetail studentDetail) {
     service.registerStudent(studentDetail);
-    return "redirect:/studentList";
+    return ResponseEntity.ok("新規登録処理が完了しました。");
   }
 
   @PostMapping("/updateStudent")
-  public String updateStudent(@Valid @ModelAttribute StudentDetail studentDetail, BindingResult result, Model model) {
-    if (result.hasErrors()) {
-      model.addAttribute("studentDetail", studentDetail);
-      return "updateStudent";
-    }
-    service.updateStudent(studentDetail.getStudent());
-    return "redirect:/studentList";
+  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
+    service.updateStudent(studentDetail);
+    return ResponseEntity.ok("更新処理が成功しました。");
   }
 
   @GetMapping("/updateStudent/{id}")
@@ -132,7 +115,8 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
-  @GetMapping("/restoreStudentList")
+  @GetMapping(""
+      + "+")
   public String getRestoreStudentList(Model model) {
     List<Student> canceledStudents = service.searchCanceledStudentList();
     model.addAttribute("canceledStudentList", canceledStudents);
