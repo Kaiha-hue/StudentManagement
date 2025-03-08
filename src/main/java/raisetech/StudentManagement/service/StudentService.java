@@ -5,53 +5,58 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentsCourses;
 import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.repository.StudentRepository;
 
+/**
+ * 受講生情報を取り扱うサービスです。
+ * 受講生の検索や登録・更新処理を行います。
+ */
+
 @Service
 public class StudentService {
 
   private StudentRepository repository;
-
-  public void updateStudentCourseName(int studentId, String courseName) {
-    repository.updateStudentCourseName(studentId, courseName);
-  }
+  private StudentConverter converter;
 
   @Autowired
-  public StudentService(StudentRepository repository) {
+  public StudentService(StudentRepository repository, StudentConverter converter) {
     this.repository = repository;
+    this.converter = converter;
+  }
+  /**
+   * 受講生一覧検索です。
+   * 全件検索を行うので、条件指定は行いません。
+   *
+   * @return 受講生一覧(全件)
+   */
+
+  public List<StudentDetail> searchStudentList() {
+    List<Student> studentList = repository.search();
+    List<StudentsCourses> studentsCoursesList = repository.searchStudentsCoursesList();
+    return converter.convertStudentDetails(studentList, studentsCoursesList);
   }
 
-  public List<Student> searchStudentList() {
-    return repository.search();
+  /**
+   * 受講生検索です。
+   * IDに紐づく受講生情報を取得したあと。その受講生に紐づく受講生コース情報を取得して設定します。
+   *
+   * @param id 受講生ID
+   * @return 受講生情報
+   */
+
+  public StudentDetail searchStudent(int id) {
+    Student student = repository.searchStudent(id);
+    List<StudentsCourses> studentsCourses = repository.searchStudentsCourses(student.getId());
+    return new StudentDetail(student, studentsCourses);
   }
 
-  public List<StudentsCourses> searchStudentsCourseList() {
-    return repository.findAllStudentsCourses();
-  }
-
-  public List<StudentsCourses> searchStudentsCoursesByStudentId(String studentId) {
-    return repository.findStudentsCoursesByStudentId(studentId);
-  }
-
-  public Student searchStudentById(int id) {
-    return repository.findStudentById(id);
-  }
-
-  @Transactional
-  public void registerStudent(StudentDetail studentDetail) {
-    // コース名を取得
-    String courseName = studentDetail.getStudentsCourses().isEmpty() ? null
-        : studentDetail.getStudentsCourses().get(0).getCourseName();
-
-    // 学生情報にコース名をセット
-    studentDetail.getStudent().setCourseName(courseName);
-
+  public StudentDetail registerStudent(StudentDetail studentDetail) {
     // 学生情報を登録
     repository.registerStudent(studentDetail.getStudent());
-
     // 受講コース情報を登録
     for (StudentsCourses studentsCourses : studentDetail.getStudentsCourses()) {
       studentsCourses.setStudentId(studentDetail.getStudent().getId());
@@ -59,27 +64,17 @@ public class StudentService {
       studentsCourses.setCourseEndAt(LocalDate.now().plusYears(1));
       repository.registerStudentsCourses(studentsCourses);
     }
+    return studentDetail;
   }
 
   @Transactional
   public void updateStudent(StudentDetail student) {
+    // 受講生の基本情報を更新
     repository.updateStudent(student);
-  }
 
-  @Transactional
-  public void updateStudentsCourses(StudentsCourses studentsCourses) {
-    repository.updateStudentsCourses(studentsCourses);
-  }
-
-  public List<Student> searchCanceledStudentList() {
-    return repository.findCanceledStudents();
-  }
-
-  @Transactional
-  public void restoreStudent(int id) {
-    repository.restoreStudent(id);
-  }
-
-  public void updateStudent(Student student) {
+    // 受講生コース情報も更新する
+    for (StudentsCourses studentsCourses : student.getStudentsCourses()) {
+      repository.updateStudentsCourses(studentsCourses);
+    }
   }
 }
