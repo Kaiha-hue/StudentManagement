@@ -1,4 +1,4 @@
-package raisetech.StudentManagement.exception;
+package raisetech.StudentManagement.exceptionhandler;
 
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
