@@ -1,5 +1,7 @@
 package raisetech.StudentManagement.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -38,25 +40,25 @@ public class StudentController {
    *
    * @return 受講生詳細一覧(全件)
    */
-
+  @Operation(summary = "一覧検索", description = "受講生の一覧を検索します。")
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() throws TestException {
     throw new TestException("現在このAPIは利用できません。URLは「studentList」ではなく「students」を利用してください。");
   }
 
   /**
-   * 受講生詳細の検索です。IDに紐づく任意の受講生の情報を取得します。
+   * 受講生詳細の検索です。
    *
    * @param id　受講生ID
    * @return　受講生
    */
+  @Operation(summary = "受講生検索", description = "指定されたIDの受講生情報を取得します。")
   @GetMapping("/student")
   public StudentDetail getStudent(@RequestParam(required = false) @NotBlank(message = "IDは必須です") String id) {
     if (id == null || id.trim().isEmpty()) {
       throw new ConstraintViolationException("IDは必須です", null);
     }
-    StudentDetail student = service.searchStudent(id);
-    return student;
+    return service.searchStudent(id);
   }
 
   /**
@@ -65,7 +67,7 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
-
+  @Operation(summary = "受講生登録", description = "受講生を登録します。")
   @PostMapping("/registerStudent")
   public ResponseEntity<StudentDetail> registerStudent(@RequestBody StudentDetail studentDetail) {
     StudentDetail responseStudentDetail = service.registerStudent(studentDetail);
@@ -73,12 +75,12 @@ public class StudentController {
   }
 
   /**
-   * 受講生詳細の更新を行います。キャンセルフラグの更新もここで行います(論理削除)
+   * 受講生詳細の更新を行います。
    *
    * @param studentDetail 受講生詳細
    * @return 実行結果
-   *
    */
+  @Operation(summary = "受講生更新", description = "受講生情報を更新します。キャンセルフラグの更新も含みます。")
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail) {
     service.updateStudent(studentDetail);
@@ -96,9 +98,10 @@ public class StudentController {
    * @param id 受講生ID
    * @return メッセージ
    */
+  @Operation(summary = "例外発生テスト", description = "指定されたIDが0の場合に受講生が見つからない例外を発生させます。")
   @GetMapping("/triggerException")
   public String triggerException(@RequestParam String id) {
-    if (id.equals("0")) {
+    if ("0".equals(id)) {
       throw new StudentNotFoundException("受講生が見つかりません: ID = " + id);
     }
     return "受講生が見つかりました: ID = " + id;
