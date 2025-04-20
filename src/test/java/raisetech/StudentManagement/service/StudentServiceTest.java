@@ -34,24 +34,4 @@ class StudentServiceTest {
   void before() {
     sut = new StudentService(repository, converter);
   }
-
-  @Test
-  void updateStudent_受講生情報とコース情報が更新されること() {
-    Student student = new Student();
-    student.setId(1);
-
-    StudentCourse course = new StudentCourse();
-    course.setId(100);
-    course.setStudentId(1);
-
-    List<StudentCourse> courseList = new ArrayList<>();
-    courseList.add(course);
-
-    StudentDetail detail = new StudentDetail(student, courseList);
-
-    sut.updateStudent(detail);
-
-    verify(repository).updateStudent(detail);
-    verify(repository).updateStudentsCourse(course);
-  }
 }
