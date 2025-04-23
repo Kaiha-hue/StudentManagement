@@ -47,22 +47,8 @@ class StudentControllerTest {
   }
 
   @Test
-  void 指定したIDの受講生情報が取得できること() throws Exception {
-    String id = "1";
-
-    Student testStudent = new Student();
-    testStudent.setId(id);
-    testStudent.setName("山田 太郎");
-    testStudent.setNickname("タロ");
-    testStudent.setEmail("yamada.taro@example.com");
-    testStudent.setAddress("東京");
-    testStudent.setGender("男性");
-
-    StudentDetail testDetail = new StudentDetail(testStudent, List.of());
-
-    // モックの動作設定
-    when(service.searchStudent(id)).thenReturn(testDetail);
-
+  void 指定したIDの受講生情報の検索が実行できて空で返ってくること() throws Exception {
+    String id = "999";
     mockMvc.perform(get("/student").param("id", id))
         .andExpect(status().isOk());
 
@@ -178,7 +164,7 @@ class StudentControllerTest {
     Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
     assertThat(violations.size()).isEqualTo(1);
-    assertThat(violations).extracting("message").containsOnly("IDは半角数字のみで入力してください。");
+    assertThat(violations).extracting("message").containsOnly("IDは数字のみで入力してください。");
   }
 
   //StudentsCourseの入力チェック//
