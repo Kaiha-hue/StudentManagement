@@ -48,17 +48,16 @@ class StudentControllerTest {
 
   @Test
   void 指定したIDの受講生情報の検索が実行できて空で返ってくること() throws Exception {
-    String id = "999";
-    mockMvc.perform(get("/student").param("id", id))
+    int id = 999;
+    mockMvc.perform(get("/student").param("id", String.valueOf(id)))
         .andExpect(status().isOk());
-
     verify(service, times(1)).searchStudent(id);
   }
 
   @Test
   void 受講生登録が成功すること() throws Exception {
     Student student = new Student();
-    student.setId("10");
+    student.setId(10);
     student.setName("登録 太郎");
     student.setNickname("トロ");
     student.setEmail("touroku@example.com");
@@ -139,7 +138,7 @@ class StudentControllerTest {
   @Test
   void 受講生詳細の受講生で適切な値を入力した時に入力チェックに異常が発生しないこと() {
     Student student = new Student();
-    student.setId("1");
+    student.setId(1);
     student.setName("山田 太郎");
     student.setNickname("タロ");
     student.setEmail("yamada.taro@example.com");
@@ -151,42 +150,15 @@ class StudentControllerTest {
     assertThat(violations.size()).isEqualTo(0);
   }
 
-  @Test
-  void 受講生詳細の受講生でIDに数字以外を用いた時に入力チェックに掛かること() {
-    Student student = new Student();
-    student.setId("テストです。");
-    student.setName("竹内隼人");
-    student.setNickname("タケ");
-    student.setEmail("test@example.com");
-    student.setAddress("沖縄");
-    student.setGender("男性");
-
-    Set<ConstraintViolation<Student>> violations = validator.validate(student);
-
-    assertThat(violations.size()).isEqualTo(1);
-    assertThat(violations).extracting("message").containsOnly("IDは数字のみで入力してください。");
-  }
-
   //StudentsCourseの入力チェック//
   @Test
   void 受講生詳細の受講生コース情報で適切な値を入力した時に入力チェックに異常が発生しないこと() {
     StudentCourse studentCourse = new StudentCourse();
-    studentCourse.setStudentId("5");
+    studentCourse.setStudentId(5);
     studentCourse.setCourseName("山田 太郎");
 
     Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
 
     assertThat(violations.size()).isEqualTo(0);
-  }
-
-  @Test
-  void 受講生詳細の受講生コース情報で受講生IDに数字以外を入力した時に入力チェックに掛かること() {
-    StudentCourse studentCourse = new StudentCourse();
-    studentCourse.setStudentId("テストです。");
-    studentCourse.setCourseName("山田 太郎");
-
-    Set<ConstraintViolation<StudentCourse>> violations = validator.validate(studentCourse);
-
-    assertThat(violations.size()).isEqualTo(1);
   }
 }

@@ -57,4 +57,23 @@
     WHERE id = #{id}
   </update>
 
+  <!-- 受講生の削除 -->
+  <delete id="deleteStudent">
+    DELETE FROM students WHERE id = #{id}
+  </delete>
+
+  <!-- 名前もしくは年齢での受講生検索（完全一致） -->
+  <select id="searchByNameOrAge" resultType="raisetech.StudentManagement.data.Student">
+    SELECT * FROM students
+    WHERE
+    (#{name} IS NOT NULL AND name = #{name})
+    OR
+    (#{age} IS NOT NULL AND age = #{age})
+  </select>
+
+  <!-- course_statusesテーブルからコース名とステータスを取得 -->
+  <select id="getAllCourseStatuses" resultType="raisetech.StudentManagement.data.CourseStatus">
+    SELECT course_name, status
+    FROM course_statuses
+  </select>
 </mapper>

@@ -13,10 +13,7 @@ import lombok.Setter;
 public class StudentCourse {
 
   private int id;
-
-  @NotBlank(message = "受講生IDは必須です。")
-  @Pattern(regexp = "^\\d+$", message = "IDは数字のみで入力してください。")
-  private String studentId;
+  private int studentId;
 
   @NotBlank
   private String courseName;
