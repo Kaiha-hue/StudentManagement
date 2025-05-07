@@ -25,21 +25,21 @@ public class StudentConverterTest {
   void convertStudentDetails_受講生とコースが正しくマッピングされる() {
     // Arrange
     Student student1 = new Student();
-    student1.setId("1");
+    student1.setId(1);
     student1.setName("山田 太郎");
 
     Student student2 = new Student();
-    student2.setId("2");
+    student2.setId(2);
     student2.setName("佐藤 花");
 
     StudentCourse course1 = new StudentCourse();
-    course1.setStudentId("1");
+    course1.setStudentId(1);
     course1.setCourseName("Java");
     course1.setCourseStartAt(LocalDate.of(2025, 4, 1));
     course1.setCourseEndAt(LocalDate.of(2026, 3, 31));
 
     StudentCourse course2 = new StudentCourse();
-    course2.setStudentId("2");
+    course2.setStudentId(2);
     course2.setCourseName("English");
     course2.setCourseStartAt(LocalDate.of(2025, 5, 1));
     course2.setCourseEndAt(LocalDate.of(2026, 4, 30));

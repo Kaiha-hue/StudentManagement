@@ -1,7 +1,6 @@
 package raisetech.StudentManagement.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -54,9 +53,9 @@ public class StudentController {
    */
   @Operation(summary = "受講生検索", description = "指定されたIDの受講生情報を取得します。")
   @GetMapping("/student")
-  public StudentDetail getStudent(@RequestParam(required = false) @NotBlank(message = "IDは必須です") String id) {
-    if (id == null || id.trim().isEmpty()) {
-      throw new ConstraintViolationException("IDは必須です", null);
+  public StudentDetail getStudent(@RequestParam(required = false) @NotBlank(message = "IDは必須です") int id) {
+    if (id <= 0) {
+      throw new IllegalArgumentException("IDは1以上の数値を指定してください。");
     }
     return service.searchStudent(id);
   }

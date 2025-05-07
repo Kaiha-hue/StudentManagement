@@ -48,7 +48,7 @@ public class StudentService {
    * @return 受講生詳細
    */
 
-  public StudentDetail searchStudent(String id) {
+  public StudentDetail searchStudent(int id) {
     Student student = repository.searchStudent(id);
     if (student == null) {  // student が null の場合は例外をスロー
       throw new StudentNotFoundException("このIDの受講生情報は存在しません: " + id);
