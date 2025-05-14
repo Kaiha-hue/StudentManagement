@@ -1,11 +1,13 @@
 package raisetech.StudentManagement.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
+import raisetech.StudentManagement.data.CourseStatus;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
 import raisetech.StudentManagement.domain.StudentDetail;
@@ -100,5 +102,27 @@ public class StudentService {
     repository.updateStudent(studentDetail);
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentsCourse(studentCourse));
+  }
+
+  public void deleteStudent(int id) {
+    Student existingStudent = repository.searchStudent(id);
+    if (existingStudent == null) {
+      throw new StudentNotFoundException("受講生が見つかりません: ID = " + id);
+    }
+    repository.deleteStudent(id);
+  }
+
+  public List<StudentDetail> searchStudentByNameOrAge(String name, Integer age) {
+    List<Student> students = repository.searchByNameOrAge(name, age);
+    List<StudentDetail> result = new ArrayList<>();
+    for (Student student : students) {
+      List<StudentCourse> courses = repository.searchStudentsCourse(student.getId());
+      result.add(new StudentDetail(student, courses));
+    }
+    return result;
+  }
+
+  public List<CourseStatus> getAllCourseStatuses() {
+    return repository.getAllCourseStatuses();
   }
 }

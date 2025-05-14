@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import raisetech.StudentManagement.data.CourseStatus;
 import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.exceptionhandler.StudentNotFoundException;
 import raisetech.StudentManagement.exceptionhandler.TestException;
@@ -104,5 +105,31 @@ public class StudentController {
       throw new StudentNotFoundException("受講生が見つかりません: ID = " + id);
     }
     return "受講生が見つかりました: ID = " + id;
+  }
+
+  @Operation(summary = "受講生削除", description = "指定されたIDの受講生をDBから物理削除します。")
+  @PostMapping("/deleteStudent")
+  public ResponseEntity<String> deleteStudent(@RequestParam int id) {
+    service.deleteStudent(id);
+    return ResponseEntity.ok("削除処理が成功しました。");
+  }
+
+  @Operation(summary = "名前または年齢による受講生検索", description = "名前または年齢（完全一致）で受講生情報を検索します。")
+  @GetMapping("/searchStudentByNameOrAge")
+  public List<StudentDetail> searchStudentByNameOrAge(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) Integer age) {
+
+    if ((name == null || name.isBlank()) && age == null) {
+      throw new IllegalArgumentException("名前または年齢のいずれかは指定してください。");
+    }
+
+    return service.searchStudentByNameOrAge(name, age);
+  }
+
+  @Operation(summary = "コースごとのステータス一覧", description = "すべてのコースに対する申し込みステータスを取得します。")
+  @GetMapping("/courseStatuses")
+  public List<CourseStatus> getAllCourseStatuses() {
+    return service.getAllCourseStatuses();
   }
 }
